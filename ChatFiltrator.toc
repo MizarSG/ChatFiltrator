@@ -1,0 +1,7 @@
+## Interface: 11508
+## Title: ChatFiltrator
+## Notes: Filters chat messages by condition
+## Author: Mizar
+## Version: 1.0.0
+
+ChatFiltrator.lua
