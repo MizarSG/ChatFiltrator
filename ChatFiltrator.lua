@@ -1,10 +1,9 @@
-print("|cffff0000[ChatFiltrator]|r Lua loaded")
-
+ChatFiltratorDB = ChatFiltratorDB
 local addonFrame = CreateFrame("Frame")
 local chatFrame
 local CHAT_FRAME_NAME = "ChatFiltrator"
 local initialized = false
-local notificationsEnabled = true
+local notificationsEnabled
 
 local chatEvents = {
     "CHAT_MSG_SAY",
@@ -31,11 +30,8 @@ local function ShowAlert(msg)
 end
 
 local function TryCreateChatWindow()
-    print("|cffff0000[ChatFiltrator]|r Trying to create chat window...")
-
     -- Ensure ChatFrame1 exists
     if not ChatFrame1 then
-        print("|cffff0000[ChatFiltrator]|r ChatFrame1 not ready")
         return false
     end
 
@@ -44,13 +40,11 @@ local function TryCreateChatWindow()
         local name = GetChatWindowInfo(i)
         if name == CHAT_FRAME_NAME then
             chatFrame = _G["ChatFrame" .. i]
-            print("|cffff0000[ChatFiltrator]|r Found existing chat window")
             return true
         end
     end
 
     -- Create new window
-    print("|cffff0000[ChatFiltrator]|r Creating new window")
     chatFrame = FCF_OpenNewWindow(CHAT_FRAME_NAME)
     if not chatFrame then
         return false
@@ -58,26 +52,20 @@ local function TryCreateChatWindow()
         ChatFrame_RemoveAllMessageGroups(chatFrame)
 	    ChatFrame_RemoveAllChannels(chatFrame) 
         FCF_SetLocked(chatFrame, false)
-        print("|cffff0000[ChatFiltrator]|r Chat window created successfully")
         return true
     end
 end
 
 addonFrame:SetScript("OnEvent", function(self, event, ...)
-
     if event == "PLAYER_LOGIN" and not initialized then
-           print("|cffff0000[ChatFiltrator]|r Event:", event)
-         if TryCreateChatWindow() then
+        if TryCreateChatWindow() then
             initialized = true
 
             for _, e in ipairs(chatEvents) do
                 self:RegisterEvent(e)
             end
-
-            print("|cffff0000[ChatFiltrator]|r Initialization COMPLETE")
         else
             -- Retry shortly if chat system still not ready
-            print("|cffff0000[ChatFiltrator]|r Retrying in 1 second...")
             C_Timer.After(1, function()
                 addonFrame:GetScript("OnEvent")(addonFrame, "PLAYER_LOGIN")
             end)
@@ -85,6 +73,18 @@ addonFrame:SetScript("OnEvent", function(self, event, ...)
         return
     end
 
+    if event == "ADDON_LOADED" then
+        local addonName = ...
+        if addonName ~= "ChatFiltrator" then return end
+        -- Initialize DB ONCE
+        if not ChatFiltratorDB then
+            ChatFiltratorDB = {}
+            ChatFiltratorDB.notificationsEnabled = true
+        end
+
+        notificationsEnabled = ChatFiltratorDB.notificationsEnabled
+        return
+    end
     if not initialized then return end
 
     local message, sender = ...
@@ -109,6 +109,7 @@ addonFrame:SetScript("OnEvent", function(self, event, ...)
 end)
 
 addonFrame:RegisterEvent("PLAYER_LOGIN")
+addonFrame:RegisterEvent("ADDON_LOADED")
 
 SLASH_CHATFILTRATOR1 = "/cf"
 SlashCmdList["CHATFILTRATOR"] = function(msg)
@@ -116,6 +117,7 @@ SlashCmdList["CHATFILTRATOR"] = function(msg)
 
     if msg == "notify" then
         notificationsEnabled = not notificationsEnabled
+        ChatFiltratorDB.notificationsEnabled = notificationsEnabled
 
         if notificationsEnabled then
             print("|cff00ff00[ChatFiltrator]|r Notifications ENABLED")

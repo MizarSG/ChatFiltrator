@@ -4,11 +4,13 @@ ChatFiltrator is a lightweight World of Warcraft Classic addon that filters chat
 
 ## Features
 - Filters chat messages using include / exclude keywords
-- Supports General, Trade, LookingForGroup, Say
 - Separate chat window for matched messages
+- Optional notifications (sound, on-screen message)
+- Settings saved between sessions
+- Slash commands
 
 ## Slash Commands
-tbd
+/cf notify  - Toggle notifications  
 
 ## Configuration
 tbd

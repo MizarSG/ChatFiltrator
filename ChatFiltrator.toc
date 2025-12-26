@@ -2,6 +2,8 @@
 ## Title: ChatFiltrator
 ## Notes: Filters chat messages by condition
 ## Author: Mizar
-## Version: 1.0.0
+## Version: 1.0.4
+
+## SavedVariables: ChatFiltratorDB
 
 ChatFiltrator.lua
