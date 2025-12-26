@@ -4,6 +4,7 @@ local addonFrame = CreateFrame("Frame")
 local chatFrame
 local CHAT_FRAME_NAME = "ChatFiltrator"
 local initialized = false
+local notificationsEnabled = true
 
 local chatEvents = {
     "CHAT_MSG_SAY",
@@ -96,12 +97,34 @@ addonFrame:SetScript("OnEvent", function(self, event, ...)
         chatFrame:AddMessage(
             string.format("|cff00ff00[%s]|r %s", sender or "?", message)
         )
-        -- Sound notification (Classic-safe)
-    	PlaySound(SOUNDKIT.RAID_WARNING)
 
-    	-- On-screen message
-	    ShowAlert("ChatFiltrator: matching message detected!")
+        if notificationsEnabled then
+            -- Sound
+            PlaySound(SOUNDKIT.RAID_WARNING)
+
+            -- On-screen message
+	        ShowAlert("ChatFiltrator: matching message detected!")
+        end
     end
 end)
 
 addonFrame:RegisterEvent("PLAYER_LOGIN")
+
+SLASH_CHATFILTRATOR1 = "/cf"
+SlashCmdList["CHATFILTRATOR"] = function(msg)
+    msg = msg and msg:lower() or ""
+
+    if msg == "notify" then
+        notificationsEnabled = not notificationsEnabled
+
+        if notificationsEnabled then
+            print("|cff00ff00[ChatFiltrator]|r Notifications ENABLED")
+        else
+            print("|cffff0000[ChatFiltrator]|r Notifications DISABLED")
+        end
+        return
+    end
+
+    print("|cffffff00ChatFiltrator commands:|r")
+    print("  /cf notify  - toggle sound & flash")
+end
