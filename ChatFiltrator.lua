@@ -10,6 +10,25 @@ local chatEvents = {
     "CHAT_MSG_CHANNEL",
 }
 
+-- Custom alert frame (Classic-safe)
+local alertFrame = CreateFrame("Frame", nil, UIParent)
+alertFrame:SetSize(400, 50)
+alertFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 120)
+alertFrame:Hide()
+
+alertFrame.text = alertFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+alertFrame.text:SetAllPoints()
+alertFrame.text:SetJustifyH("CENTER")
+alertFrame.text:SetTextColor(1, 1, 0)
+
+local function ShowAlert(msg)
+    alertFrame.text:SetText(msg)
+    alertFrame:SetAlpha(1)
+    alertFrame:Show()
+
+    UIFrameFadeOut(alertFrame, 10, 1, 0)
+end
+
 local function TryCreateChatWindow()
     print("|cffff0000[ChatFiltrator]|r Trying to create chat window...")
 
@@ -31,24 +50,16 @@ local function TryCreateChatWindow()
 
     -- Create new window
     print("|cffff0000[ChatFiltrator]|r Creating new window")
-    local id = FCF_OpenNewWindow(CHAT_FRAME_NAME)
-    print("|cffff0000[ChatFiltrator]|r New window created")
-    if not id then
-        print("|cffff0000[ChatFiltrator]|r FCF_OpenNewWindow failed")
+    chatFrame = FCF_OpenNewWindow(CHAT_FRAME_NAME)
+    if not chatFrame then
         return false
+    else
+        ChatFrame_RemoveAllMessageGroups(chatFrame)
+	    ChatFrame_RemoveAllChannels(chatFrame) 
+        FCF_SetLocked(chatFrame, false)
+        print("|cffff0000[ChatFiltrator]|r Chat window created successfully")
+        return true
     end
-
-    chatFrame = _G["ChatFrame" .. id]
-     print("|cffff0000[ChatFiltrator]|r Chat frame received")
-    FCF_SetWindowColor(chatFrame, 0, 0, 0)
-         print("|cffff0000[ChatFiltrator]|r Color set")
-    FCF_SetWindowAlpha(chatFrame, 1)
-         print("|cffff0000[ChatFiltrator]|r Alpha set")
-    FCF_SetLocked(chatFrame, false)
-         print("|cffff0000[ChatFiltrator]|r Locked set")
-
-    print("|cffff0000[ChatFiltrator]|r Chat window created successfully")
-    return true
 end
 
 addonFrame:SetScript("OnEvent", function(self, event, ...)
@@ -85,6 +96,11 @@ addonFrame:SetScript("OnEvent", function(self, event, ...)
         chatFrame:AddMessage(
             string.format("|cff00ff00[%s]|r %s", sender or "?", message)
         )
+        -- Sound notification (Classic-safe)
+    	PlaySound(SOUNDKIT.RAID_WARNING)
+
+    	-- On-screen message
+	    ShowAlert("ChatFiltrator: matching message detected!")
     end
 end)
 
