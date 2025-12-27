@@ -10,3 +10,9 @@
 - Command to toggle notifications added
 ## 1.0.4
 - DB to save preferencies added. Debug logs removed
+## 1.0.4
+- More chats added to monitoring
+- Default initialization of settings added
+- Status command added
+- Filter condition moved to saved variables
+- Possibility to control these variables via commands added
