@@ -101,7 +101,7 @@ local function MatchesKeywords(message)
 end
 
 addonFrame:SetScript("OnEvent", function(self, event, ...)
-    if event == "PLAYER_LOGIN" and not initialized then
+    if event == "PLAYER_ENTERING_WORLD" and not initialized then
         if TryCreateChatWindow() then
             initialized = true
 
@@ -144,6 +144,8 @@ addonFrame:SetScript("OnEvent", function(self, event, ...)
     end
     if not initialized then return end
 
+    print("[ChatFiltrator] loaded ")
+
     local message, sender = ...
 
     if not message then return end
@@ -160,7 +162,7 @@ addonFrame:SetScript("OnEvent", function(self, event, ...)
     end
 end)
 
-addonFrame:RegisterEvent("PLAYER_LOGIN")
+addonFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 addonFrame:RegisterEvent("ADDON_LOADED")
 
 SLASH_CHATFILTRATOR1 = "/cf"
