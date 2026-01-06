@@ -108,11 +108,13 @@ addonFrame:SetScript("OnEvent", function(self, event, ...)
             for _, e in ipairs(chatEvents) do
                 self:RegisterEvent(e)
             end
+            print("[ChatFiltrator] loaded, window created ")
         else
             -- Retry shortly if chat system still not ready
             C_Timer.After(1, function()
                 addonFrame:GetScript("OnEvent")(addonFrame, "PLAYER_LOGIN")
             end)
+            print("[ChatFiltrator] loaded, Failed to create window, retry ")
         end
         return
     end
@@ -143,8 +145,6 @@ addonFrame:SetScript("OnEvent", function(self, event, ...)
         return
     end
     if not initialized then return end
-
-    print("[ChatFiltrator] loaded ")
 
     local message, sender = ...
 
